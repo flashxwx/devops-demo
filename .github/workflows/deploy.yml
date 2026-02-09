@@ -9,13 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: 检查 HTML 语法
-        # 使用官方推荐的最新稳定版本标签
-        uses: htmlhint/htmlhint-action@v2.0.1
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
         with:
-          # 检查根目录下所有的 html 文件
-          source: .
+          node-version: '20'
+
+      - name: 安装并运行 HTMLHint
+        run: |
+          npm install -g htmlhint
+          htmlhint "**/*.html"
 
   deploy-site:
     runs-on: ubuntu-latest
