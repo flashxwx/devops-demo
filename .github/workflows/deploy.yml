@@ -1,0 +1,32 @@
+name: Check and Deploy Website
+
+on:
+  push:
+    branches: [ main ]  # 只在推送到 main 时触发
+
+jobs:
+  # 任务 1：检查代码
+  check-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: 检查 HTML 语法
+        # 这里用一个现成的插件来检查 HTML 是否写错
+        uses: htmlhint/htmlhint-action@v2
+        with:
+          bundle-install: true
+
+  # 任务 2：部署（依赖任务 1）
+  deploy-site:
+    runs-on: ubuntu-latest
+    needs: check-code  # 关键：只有 check-code 成功，这个任务才会跑
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 部署到 GitHub Pages
+        # 使用专门的部署插件
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} # 自动生成，无需手动配置
+          publish_dir: ./  # 你的网页文件在哪里（如果是根目录就写 ./）
